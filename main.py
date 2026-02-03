@@ -26,11 +26,11 @@ def start_timer():
     long_break_seconds = 20
 
     if reps == 8:
-        countdown(long_break_seconds)
         timer_label.config(text="¡A descansar!", fg=RED)
+        countdown(long_break_seconds)
     elif reps % 2 == 0:
-        countdown(short_break_seconds)
         timer_label.config(text="¡A descansar!", fg=PINK)
+        countdown(short_break_seconds)
     else:
         timer_label.config(text="¡A trabajar!", fg=GREEN)
         countdown(work_seconds)
@@ -47,6 +47,11 @@ def countdown(count):
         window.after(1000, countdown, count - 1)
     else:
         start_timer()
+        marks = ""
+        work_sessions = math.floor(reps/2)
+        for _ in range(work_sessions):
+            marks += "✔"
+        checkmarks.config(text=marks)
 
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
@@ -73,7 +78,7 @@ reset_button = Button(text="Reset", highlightthickness=0, command=reset_timer)
 reset_button.grid(column=3, row=3)
 
 # Display pomodoro checkmark
-checkmarks = Label(text="✔", fg=GREEN, bg=YELLOW, font=(FONT_NAME, 14))
+checkmarks = Label(fg=GREEN, bg=YELLOW, font=(FONT_NAME, 14))
 checkmarks.grid(column=2, row=4)
 
 
