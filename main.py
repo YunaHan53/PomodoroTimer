@@ -10,33 +10,48 @@ WORK_MIN = 25
 SHORT_BREAK_MIN = 5
 LONG_BREAK_MIN = 20
 reps = 0
+timer = None
 
 # ---------------------------- TIMER RESET ------------------------------- # 
 def reset_timer():
-    print("Resetting...")
-    pass
+    global reps
+    reps = 0
+    window.after_cancel(timer)
+    timer_label.config(text="Timer")
+    canvas.itemconfig(timer_text, text="00:00")
+    checkmarks.config(text="")
 
 # ---------------------------- TIMER MECHANISM ------------------------------- # 
 def start_timer():
+    """
+        - Checks for length of time to set depending on the rep number.
+        - Starts the timer by calling countdown()
+    """
     global reps
     reps += 1
 
-    work_seconds = 10
-    short_break_seconds = 5
-    long_break_seconds = 20
+    work_seconds = WORK_MIN * 60
+    short_break_seconds = SHORT_BREAK_MIN * 60
+    long_break_seconds = LONG_BREAK_MIN * 60
 
     if reps == 8:
-        timer_label.config(text="¡A descansar!", fg=RED)
+        timer_label.config(text="Long Break!", fg=RED)
         countdown(long_break_seconds)
     elif reps % 2 == 0:
-        timer_label.config(text="¡A descansar!", fg=PINK)
+        timer_label.config(text="Break Time!", fg=PINK)
         countdown(short_break_seconds)
     else:
-        timer_label.config(text="¡A trabajar!", fg=GREEN)
+        timer_label.config(text="Work Time;)", fg=GREEN)
         countdown(work_seconds)
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- # 
 def countdown(count):
+    """
+        - Calculates the count into min:sec and display in 00:00 format.
+        - Keeps track of the count decreasing by 1 every sec.
+        - Calls start_timer() again when count == 0.
+        - Adds a checkmark for every work session to keep track of progress.
+    """
     count_minutes = math.floor(count / 60)
     count_seconds = count % 60
     if count_seconds < 10:
@@ -44,7 +59,8 @@ def countdown(count):
 
     canvas.itemconfig(timer_text, text=f"{count_minutes}:{count_seconds}")
     if count > 0:
-        window.after(1000, countdown, count - 1)
+        global timer
+        timer = window.after(1000, countdown, count - 1)
     else:
         start_timer()
         marks = ""
@@ -72,9 +88,9 @@ timer_text = canvas.create_text(100, 130, text="00:00", fill="white", font=(FONT
 canvas.grid(column=2, row=2)
 
 # Display Start & Reset button
-start_button = Button(text="Start", highlightthickness=0, command=start_timer)
+start_button = Button(text="Start", bg=YELLOW, highlightthickness=0, command=start_timer)
 start_button.grid(column=1, row=3)
-reset_button = Button(text="Reset", highlightthickness=0, command=reset_timer)
+reset_button = Button(text="Reset", bg=YELLOW, highlightthickness=0, command=reset_timer)
 reset_button.grid(column=3, row=3)
 
 # Display pomodoro checkmark
